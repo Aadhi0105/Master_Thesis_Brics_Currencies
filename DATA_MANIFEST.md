@@ -27,8 +27,27 @@ Largest discrepancy: CHN→IND at 0.80% — within normal statistical tolerance.
 - Russia broad money growth missing 2021–2024 — sanctions reporting restriction
 - India broad money growth missing 2022–2024 — World Bank reporting lag
 - China DOTS exports missing 2020 — COVID reporting gap
-- Pre-2019 SWIFT HHI data — pending supplementation from BIS quarterly reviews
+- SWIFT HHI 2021 — missing observation; not interpolated. Public archive unavailable for this year. Treated as missing given structural volatility of COVID-19 recovery period and proximity to 2022 Russia sanctions shock. CNY share (2.70%) available from RMB_Evolution_2019_2026.csv; all other currencies absent.
+- SWIFT HHI 2013 — approximate; sourced from low-resolution Wayback Machine archive image. Verify against cleaner source if available.
+
+## SWIFT HHI Annual Series — Coverage Summary
+| Year | Status | Source |
+|------|--------|--------|
+| 2013 | Approximate | Wayback Machine archive (low resolution) |
+| 2014 | Complete | Wayback Machine archive |
+| 2015 | Complete | SWIFT RMB Tracker December 2015 report |
+| 2016 | Complete | SWIFT RMB Tracker December 2016 report |
+| 2017 | Complete | SWIFT RMB Tracker December 2017 report |
+| 2018 | Complete | SWIFT RMB Tracker December 2018 report |
+| 2019 | Complete | SWIFT RMB Tracker December 2019 report |
+| 2020 | Complete | SWIFT RMB Tracker November 2020 global payments chart |
+| 2021 | MISSING | Public archive unavailable — not interpolated |
+| 2022 | Complete | SWIFT RMB Tracker December 2022 report |
+| 2023 | Complete | SWIFT RMB Tracker December 2023 report |
+| 2024 | Complete | SWIFT RMB Tracker December 2024 report |
+| 2025 | Complete | SWIFT Global Currency Tracker December 2025 report |
 
 ## Status
 All primary data sources complete as of 22 March 2026.
-Remaining: Pre-2019 HHI supplementation from BIS quarterly reviews.
+SWIFT HHI annual series complete for 2013–2025 (2021 missing, 2013 approximate).
+Data collection phase closed. Next phase: Python data cleaning and LCShare proxy construction.
