@@ -4,8 +4,8 @@
 **Author:** Aadhitya Tejaswin Prakash Sridevi  
 **Programme:** Master in Management (Business Management), EDHEC Business School  
 **Exchange:** University of St. Gallen (HSG) — Full-Year Exchange, Quantitative Economics  
-**Supervisor:** [Mirco Rubin], EDHEC Business School  
-**Status:** Data collection complete — entering empirical analysis phase (March 2026)
+**Supervisor:** EDHEC Business School  
+**Status:** Data collection and panel construction complete — entering empirical analysis phase (May 2026)
 
 ---
 
@@ -38,7 +38,7 @@ A Herfindahl-Hirschman Index computed annually from SWIFT global payment currenc
 A bilateral panel regression estimating the determinants of local currency settlement share (LCShare) across BRICS country pairs and their major trading partners (2010–2024). The dependent variable is a proxy constructed from SWIFT aggregate payment data and BIS Locational Banking Statistics. Independent variables include bilateral trade intensity (IMF DOTS), FX volatility (IMF Exchange Rates), GDP, trade openness, inflation, and broad money growth (World Bank WDI).
 
 ### Equation 3 — Difference-in-Differences (DiD)
-An event-study design estimating the causal effect of eight discrete policy events on local currency settlement. The strongest identification comes from the Russia SWIFT exclusion (February 2022), which provides a large, discrete, and well-documented treatment. Additional events include the CIPS Phase 1 and Phase 2 launches, the India-Russia Rupee Framework, the Brazil-China RMB Agreement, and the BRICS Johannesburg Summit Declaration (2023). The parallel trends assumption and spillover effects will be reviewed with the thesis supervisor and an external methodology consultant at HSG.
+An event-study design estimating the causal effect of eight discrete policy events on local currency settlement. The strongest identification comes from the Russia SWIFT exclusion (February 2022), which provides a large, discrete, and well-documented treatment. Additional events include the CIPS Phase 1 and Phase 2 launches, the India-Russia Rupee Framework, the Brazil-China RMB Agreement, and the BRICS Johannesburg Summit Declaration (2023). The parallel trends assumption and spillover effects are under review with the HSG methodology advisor.
 
 ---
 
@@ -47,44 +47,88 @@ An event-study design estimating the causal effect of eight discrete policy even
 ```
 Master_Thesis_Brics_Currencies/
 │
-├── notebooks/                        # Jupyter notebooks for data cleaning and analysis
-│   └── [to be populated]
+├── notebooks/                          # Jupyter notebooks — data pipeline and analysis
+│   ├── 01_swift_extraction.ipynb       # SWIFT RMB Tracker data extraction
+│   ├── 02_data_cleaning.ipynb          # Dataset-by-dataset cleaning (COMPLETE — commit 9eecc92)
+│   └── 03_panel_construction.ipynb     # Master panel construction and LCShare proxy (COMPLETE — commit d615189)
 │
-├── scripts/                          # Python scripts for data extraction and processing
-│   └── extract_swift_v2.py           # SWIFT RMB Tracker data extraction (v2)
+├── scripts/                            # Python utility scripts
+│   ├── extract_swift_v2.py             # SWIFT RMB Tracker data extraction (v2)
+│   └── convert_oct22.py                # SWIFT October 2022 format conversion
 │
-├── outputs/                          # Processed datasets and figures
-│   └── [to be populated]
+├── outputs/                            # Processed datasets and figures (not tracked in Git)
+│   ├── SWIFT_HHI_Annual_Clean.csv      # 13 rows — HHI series 2013–2025
+│   ├── SWIFT_RMB_Monthly_Clean.csv     # 86 rows — monthly CNY share 2019–2026
+│   ├── BIS_LBS_Clean.csv               # 75 rows — USD/NonUSD share per BRICS country 2010–2024
+│   ├── IMF_COFER_Clean.csv             # 16 rows — annual reserve shares 2010–2025
+│   ├── IMF_DOTS_Clean_Final.csv        # 840 rows — bilateral trade flows 2010–2024
+│   ├── IMF_FX_Volatility_Clean.csv     # 80 rows — annual FX volatility per BRICS currency 2010–2025
+│   ├── WorldBank_Macro_Clean.csv       # 75 rows — macro controls per BRICS country 2010–2024
+│   ├── Policy_Events_Clean.csv         # 8 rows — DiD treatment events
+│   └── Master_Panel_BRICS_2010_2024.csv  # 600 rows, 31 columns — master panel (not tracked)
 │
-├── DATA_MANIFEST.md                  # Full dataset inventory with citations and gap notes
-└── README.md                         # This file
+├── DATA_MANIFEST.md                    # Full dataset inventory with citations and gap notes
+└── README.md                           # This file
 ```
 
-> **Note:** Raw data files are stored locally at `/Users/psat0501/Desktop/HSG/Master Thesis/Thesis Data/` and are not tracked in this repository. Word documents are excluded via `.gitignore`. The canonical record of data collection status is `DATA_MANIFEST.md`.
+> **Note:** Raw data files are stored locally at `/Users/psat0501/Desktop/HSG/Master Thesis/Thesis Data/` and are not tracked in this repository. Word documents and output CSVs are excluded via `.gitignore`. The canonical record of data collection status is `DATA_MANIFEST.md`.
 
 ---
 
 ## Data Sources
 
-All eight primary datasets have been collected as of 22 March 2026. Full citations and file-level details are in `DATA_MANIFEST.md`.
+All eight primary datasets have been collected, cleaned, and integrated into the master panel as of May 2026.
 
-| Dataset | Coverage | Role in Analysis |
-|---------|----------|-----------------|
-| SWIFT Global Currency Tracker | 2013–2025 (annual HHI); 2019–2026 (monthly CNY share) | Equation 1 (HHI); LCShare proxy component |
-| BIS Locational Banking Statistics | 1977–2025 Q3 | LCShare proxy component; financial linkage variable |
-| IMF COFER | 2010–2025 Q3 | Equation 1 (reserve concentration) |
-| IMF DOTS / IMTS | 2010–2024 | Equation 2 (trade intensity regressor) |
-| IMF Exchange Rates | 2010–2026 | Equation 2 (FX volatility control) |
-| World Bank WDI | 2010–2024 | Equation 2 (macro controls) |
-| Policy Events Dataset | 2015–2023 | Equation 3 (DiD treatment assignment) |
-| UN Comtrade | 2010–2024 | Cross-validation of DOTS bilateral trade figures |
+| Dataset | Coverage | Output File | Role in Analysis |
+|---------|----------|-------------|-----------------|
+| SWIFT Global Currency Tracker | 2013–2025 (HHI); 2019–2026 (monthly CNY) | `SWIFT_HHI_Annual_Clean.csv`; `SWIFT_RMB_Monthly_Clean.csv` | Equation 1 (HHI); LCShare proxy component |
+| BIS Locational Banking Statistics | 1977–2025 Q3 | `BIS_LBS_Clean.csv` | LCShare proxy component; financial de-dollarisation measure |
+| IMF COFER | 2010–2025 Q3 | `IMF_COFER_Clean.csv` | Equation 1 (reserve concentration) |
+| IMF DOTS / IMTS | 2010–2024 | `IMF_DOTS_Clean_Final.csv` | Equation 2 (trade intensity regressor) |
+| IMF Exchange Rates | 2010–2026 | `IMF_FX_Volatility_Clean.csv` | Equation 2 (FX volatility control) |
+| World Bank WDI | 2010–2024 | `WorldBank_Macro_Clean.csv` | Equation 2 (macro controls) |
+| Policy Events Dataset | 2015–2023 | `Policy_Events_Clean.csv` | Equation 3 (DiD treatment assignment) |
+| UN Comtrade | 2010–2024 | Validation only — no export | Cross-validation of DOTS (mean deviation: 0.98%) |
 
 ### Key Data Notes
-- **LCShare dependent variable:** No direct bilateral currency settlement data exists in public sources. LCShare is constructed as a proxy from SWIFT aggregate payment shares and BIS LBS dollar-share data. This limitation is acknowledged and addressed in the methodology chapter.
-- **SWIFT HHI 2021:** Unavailable from public archives. Treated as a missing observation rather than interpolated, given the structural volatility of the COVID-19 recovery period and proximity to the 2022 Russia sanctions shock.
-- **SWIFT HHI 2013:** Available from Wayback Machine archive but sourced from a low-resolution image; treated as approximate pending verification.
-- **UN Comtrade:** Used solely as a cross-validation instrument for DOTS trade figures (right-hand side of Equation 2 only). Comtrade records trade values in USD, not currency of settlement, and cannot serve as an LCShare source.
-- **SWIFT undercounting:** SWIFT data systematically undercounts local currency settlement because CIPS (China) and SPFS (Russia) route payments outside the SWIFT network. This is flagged explicitly in the methodology and addressed through BIS CPMI supplementary data.
+
+- **LCShare dependent variable:** No direct bilateral currency settlement data exists in public sources — confirmed by faculty consultation with Associate Professor Mirco Rubin (HSG, Econometrics). LCShare is constructed as a proxy: `LCShare_i_t = 0.5 × SWIFT_CNY_Share_t + 0.5 × (1 − BIS_USD_Share_i_t)`. This is the field-standard approach given the data constraint and is acknowledged in the methodology chapter.
+- **flag_bis_only (2010–2018):** SWIFT monthly CNY data is unavailable before January 2019. For 2010–2018, LCShare uses the BIS component only (full weight), creating a scale break at 2019. A dummy variable `flag_bis_only` is included in the master panel to control for this.
+- **SWIFT HHI 2021:** Unavailable from public archives. Treated as a missing observation — not interpolated — given the structural volatility of the COVID-19 recovery period and proximity to the 2022 Russia sanctions shock.
+- **SWIFT HHI 2013:** Sourced from a low-resolution Wayback Machine archive image; flagged as approximate (`flag_approximate = True`).
+- **UN Comtrade:** Used solely as a cross-validation instrument for DOTS trade figures. Comtrade records trade values in USD — not currency of settlement — and cannot serve as an LCShare source.
+- **SWIFT undercounting:** SWIFT data systematically undercounts local currency settlement because CIPS (China) and SPFS (Russia) route payments outside the SWIFT network. Flagged explicitly in the methodology chapter.
+
+---
+
+## Master Panel
+
+The master panel `Master_Panel_BRICS_2010_2024.csv` is the primary input for all three analysis notebooks.
+
+| Property | Value |
+|----------|-------|
+| Rows | 600 |
+| Columns | 31 |
+| Unit of observation | Country_i × Country_j × Year |
+| BRICS countries (i) | BRA, RUS, IND, CHN, ZAF |
+| Counterpart countries (j) | ARE, BRA, CHN, DEU, GBR, IND, JPN, RUS, ZAF |
+| Years | 2010–2024 |
+
+**Remaining nulls (all flagged, not imputed):**
+
+| Variable | Null count | Reason |
+|----------|-----------|--------|
+| `TradeIntensity` | 8 | CHN 2020 export gap (COVID reporting) |
+| `BroadMoney_Growth_Pct` | 56 | RUS 2021–2024 + IND 2022–2024 |
+
+---
+
+## Key Empirical Signals Identified During Cleaning
+
+- **Russia de-dollarisation:** BIS USD share falls from 63% (2010) to 18% (2024) — the most dramatic trajectory in the sample. FX volatility peaks at 0.495 in 2022 — largest observation in the dataset.
+- **CNY internationalisation arc:** SWIFT share peaks at 4.74% (July 2024), declines to 2.74% (February 2026). COFER share peaks at 2.70% (2021–2022), declines to 1.96% (2025). Post-2022 reversal in both series directly engages the sceptical literature.
+- **Russia–China trade surge:** Bilateral trade rises from ~USD 55bn (2019) to ~USD 113bn (2024) post-sanctions — the anchor observation for the DiD estimation.
+- **SWIFT HHI spike:** 0.316 in 2022 (vs ~0.300 pre-sanctions) — USD concentration reasserted immediately post-exclusion before partially reverting.
 
 ---
 
@@ -101,19 +145,22 @@ All eight primary datasets have been collected as of 22 March 2026. Full citatio
 - [x] UN Comtrade cross-validated against IMF DOTS — deviations below 1% for all major BRICS pairs
 - [x] Data gap assessment documented (see `DATA_MANIFEST.md`)
 - [x] Git repository initialised with structured folder layout
+- [x] `02_data_cleaning.ipynb` — all 9 datasets cleaned and validated (commit `9eecc92`)
+- [x] `03_panel_construction.ipynb` — master panel exported: 600 rows, 31 columns (commit `d615189`)
+- [x] LCShare proxy variable constructed (SWIFT + BIS LBS, equal weights baseline)
+- [x] 8 DiD treatment dummies and 8 post-period dummies constructed
+- [x] Supervisor progress report updated (May 2026)
 
 ### In Progress / Upcoming
-- [ ] Supervisor update (Monday 23 March 2026)
-- [ ] Meeting with HSG macroeconomics professor — DiD identification strategy and LCShare proxy methodology
-- [ ] Python data cleaning notebooks — merging, standardisation, panel construction
-- [ ] LCShare proxy variable construction from SWIFT + BIS LBS
-- [ ] HHI computation and visualisation (Equation 1)
-- [ ] Fixed-effects panel regression (Equation 2)
-- [ ] Difference-in-Differences estimation (Equation 3)
-- [ ] Literature review chapter (incorporating sceptical literature)
+- [ ] Meeting with HSG methodology advisor (Prof Mirco Rubin) — 4 May 2026 — DiD parallel trends and proxy validation
+- [ ] `04_hhi_analysis.ipynb` — Equation 1: HHI concentration analysis and visualisation
+- [ ] `05_did_estimation.ipynb` — Equation 3: Difference-in-Differences with event-study plots
+- [ ] `06_panel_regression.ipynb` — Equation 2: Fixed-effects panel regression with robustness checks
+- [ ] Literature review chapter
 - [ ] Methodology chapter
 - [ ] Results and discussion chapters
-- [ ] Thesis submission
+- [ ] Written thesis submission to supervisor (5 June 2026)
+- [ ] Oral defense (19–26 June 2026, deadline 30 June 2026)
 - [ ] Pre-doctoral application to University of Zurich (UZH)
 - [ ] Journal submission (target: post-thesis)
 
@@ -123,12 +170,47 @@ All eight primary datasets have been collected as of 22 March 2026. Full citatio
 
 | Challenge | Status |
 |-----------|--------|
-| LCShare proxy relies on indirect sources (SWIFT + BIS LBS) rather than direct settlement data | Acknowledged; discussed in methodology |
-| SWIFT systematically undercounts via CIPS/SPFS | Flagged; BIS CPMI supplement planned |
-| DiD parallel trends assumption — CIPS gradual rollout complicates clean identification | To be reviewed with HSG professor |
-| Russia sanctions create global spillover effects, complicating clean DiD control group | To be reviewed with HSG professor |
-| HHI measure is aggregate — may mask bilateral heterogeneity | Addressed via supervisor-recommended extension to individual BRICS currencies |
-| CNY COFER data only available from 2016-Q4 | Known institutional fact; stated in methodology |
+| LCShare proxy relies on indirect sources (SWIFT + BIS LBS) rather than direct settlement data | Acknowledged; field-wide constraint confirmed by HSG faculty consultation |
+| flag_bis_only scale break at 2019 — pre/post SWIFT availability creates non-comparable LCShare levels | Controlled via `flag_bis_only` dummy in master panel |
+| SWIFT systematically undercounts via CIPS/SPFS | Flagged in methodology; BIS CPMI supplement planned |
+| DiD parallel trends assumption — CIPS gradual rollout complicates clean identification | Under review with Prof Mirco Rubin (HSG) — meeting 4 May 2026 |
+| Russia sanctions create global spillover effects, complicating clean DiD control group | Under review with Prof Mirco Rubin (HSG) |
+| Event 7 (BRICS Johannesburg Summit) treats all 600 panel rows — no untreated control group | Restricted to robustness check only; excluded from main DiD specification |
+| Event 6 (Saudi Arabia–China) unconfirmed formal agreement | Flagged (`flag_unconfirmed = True`); excluded from main specification |
+| HHI measure is aggregate — may mask bilateral heterogeneity | Addressed via extension to individual BRICS currencies |
+| CNY COFER data only available from 2016-Q4 | Known institutional fact; stated in methodology; not backfilled |
+
+---
+
+## Timeline
+
+| Milestone | Date |
+|-----------|------|
+| Data collection complete | 22 March 2026 ✓ |
+| Data cleaning and panel construction complete | May 2026 ✓ |
+| HSG advisor meeting (Prof Mirco Rubin, Meeting 3) | 4 May 2026 |
+| Analysis notebooks complete | May 2026 |
+| Written thesis submission to supervisor | 5 June 2026 |
+| Oral defense | 19–26 June 2026 |
+| Defense deadline | 30 June 2026 |
+
+---
+
+## Data Citations
+
+Bank for International Settlements (2026), Locational banking statistics, BIS WS_LBS_D_PUB 1.0 (data set), https://data.bis.org/search, accessed 18 March 2026.
+
+International Monetary Fund (2026), Currency Composition of Official Foreign Exchange Reserves (COFER), IMF.STA:COFER(7.0.1), https://data.imf.org, accessed 19 March 2026.
+
+International Monetary Fund (2026), International Trade in Goods by Partner Country (IMTS), IMF.STA:IMTS(1.0.0), https://data.imf.org, accessed 19 March 2026.
+
+International Monetary Fund (2026), Exchange Rates (ER), IMF.STA:ER(4.0.1), https://data.imf.org, accessed 19 March 2026.
+
+SWIFT (2026), Global Currency Tracker (formerly RMB Tracker), https://www.swift.com/our-solutions/compliance-and-shared-services/business-intelligence/renminbi/rmb-tracker, accessed March 2026.
+
+United Nations (2026), UN Comtrade Database, https://comtradeplus.un.org, accessed 22 March 2026.
+
+World Bank (2026), World Development Indicators, https://databank.worldbank.org, accessed 19 March 2026.
 
 ---
 
@@ -141,4 +223,4 @@ GitHub: [Aadhi0105](https://github.com/Aadhi0105)
 
 ---
 
-*Last updated: 22 March 2026*
+*Last updated: 3 May 2026*
